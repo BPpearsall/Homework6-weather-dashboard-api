@@ -1,0 +1,16 @@
+header {
+    display: flex;
+    justify-content: center;
+    color: white;
+    padding: 1%;
+    background:linear-gradient(rgb(39, 39, 61), blue);
+    min-width: none;
+}
+h1 {
+    font-size: 60px;
+    font-weight: bolder;
+}
+main{
+    min-width: 100%;
+    max-width: 100%;
+}
