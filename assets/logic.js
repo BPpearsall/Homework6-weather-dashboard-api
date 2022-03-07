@@ -131,7 +131,7 @@ function searchWeatherHistory(event) {
 
 initSearchHistory();
 
-searchBtn.addEventListener("submit", searchCity)
+searchBtn.addEventListener("click", searchCity)
 
 
 searchHistoryEl.addEventListener("click", searchWeatherHistory)

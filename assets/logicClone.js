@@ -100,7 +100,7 @@ function renderItems(city, data) {
 
 // initSearchHistory();
 
-searchBtn.addEventListener("submit", handleFormSubmit)
+searchBtn.addEventListener("click", handleFormSubmit)
 
 
 
