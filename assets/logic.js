@@ -4,6 +4,8 @@ let searchHistoryEl = document.querySelector("#search-history")
 let weatherURL = "https://api.openweathermap.org/";
 let APIKEY = "eb3ef0e0e63f51c08b0ca6554462ad8c"
 
+let searchHistory = []
+
 function renderCurrentWeather(city, weather, timezone) {
   // store response data when created variables
   let tempF = weather.temp
@@ -27,6 +29,9 @@ function initSearchHistory() {
 }
 
 function appendHistory(search) {
+  searchHistory.push(search)
+  localStorage.setItem("cityList", JSON.stringify(searchHistory))
+  console.log(searchHistory)
   // sets localstorage, updates displayed history
   // if there is no search, return function
   // searchhistory[] needs to be globally declards
@@ -58,7 +63,8 @@ function fetchWeather(location) {
   let city = location.name
   console.log(city)
   console.log(location)
-  let apiurl = `${weatherURL}/data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&exclude=minutely,hourly&appid=${APIKEY}`;
+  let apiurl = `${weatherURL}data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&exclude=minutely,hourly&appid=${APIKEY}`;
+  
   fetch(apiurl)
     .then(function (response) {
       console.log(response)
@@ -108,6 +114,7 @@ function searchCity(event) {
   }
   event.preventDefault()
   let search = cityEntryEl.value.trim();
+  console.log(cityEntryEl)
   fetchCoords(search);
   cityEntryEl.value = '';
 }
@@ -122,7 +129,6 @@ function searchWeatherHistory(event) {
   fetchCoords(search)
 }
 
-console.log(searchCity)
 initSearchHistory();
 
 searchBtn.addEventListener("submit", searchCity)
