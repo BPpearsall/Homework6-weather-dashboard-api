@@ -15,26 +15,29 @@ function renderCurrentWeather(city, weather, timezone) {
   let icon = weather.weather[0].icon
   let image = "http://openweathermap.org/img/w/" + icon + ".png";
   let tempF = weather.temp
+  let date = weather.date
   let humidity = weather.humidity
   let UvIndex = weather.uvi
 
   let card = document.createElement("div");
   let cardCity = document.createElement("h2")
   let cardImg = document.createElement("img")
+  let cardDate = document.createElement("h5")
   let cardTemp = document.createElement("p")
   let cardWind = document.createElement("p")
   let cardHumidity = document.createElement("p")
   let cardUvIndex = document.createElement("p")
 
   cardCity.textContent = city
+  cardDate.textContent = moment().format("MM/DD/YYYY");
   cardTemp.textContent = "Current Temperature: " + tempF + " Degrees Farenheit"
   cardWind.textContent = "Current Windspeed: " + windspeed + " mph"
-  cardHumidity.textContent = "Current Humidity: " + humidity + " %"
+  cardHumidity.textContent = "Current Humidity: " + humidity + "%"
   cardUvIndex.textContent = "Current UV Index: " + UvIndex
 
   cardImg.setAttribute("src", image)
 
-  card.append(cardCity, cardImg, cardTemp, cardWind, cardHumidity, cardUvIndex)
+  card.append(cardCity, cardImg, cardDate, cardTemp, cardWind, cardHumidity, cardUvIndex)
   currentWeatherEl.append(card)
   
 }
@@ -50,7 +53,7 @@ function renderForecast(forecast, timezone) {
     let wind = singleDay.wind_speed
     let humidity = singleDay.humidity
 
-
+    
     let card = document.createElement("div");
     let cardImg = document.createElement("img")
     let cardDate = document.createElement("h5")
@@ -58,8 +61,7 @@ function renderForecast(forecast, timezone) {
     let cardWind = document.createElement("p")
     let cardHumidity = document.createElement("p")
 
-    
-    cardDate.textContent = date
+    cardDate.textContent = moment.unix(date).format("MM/DD/YYYY");
     cardTemp.textContent = "Current Temperature: " + tempF + " Degrees Farenheit"
     cardWind.textContent = "Current Windspeed: " + wind + " mph"
     cardHumidity.textContent = "Current Humidity: " + humidity + " %"
@@ -72,9 +74,12 @@ function renderForecast(forecast, timezone) {
 }
 
 function initSearchHistory() {
+  
+  }
+    
+  ;
   // localstorage.getitem
   renderSearchHistory()
-}
 
 function appendHistory(search) {
   if (!searchHistory) {
@@ -91,7 +96,17 @@ function appendHistory(search) {
 }
 
 function renderSearchHistory() {
-  
+  let searchedCities = JSON.parse(localStorage.getItem("cityList"))
+  console.log(searchedCities)
+  for (let i = 0; i < searchedCities.length; i++) {
+    const pastCity = searchedCities[i];
+    
+    let cityBtn = document.createElement("button")
+    cityBtn.textContent = pastCity
+    searchHistoryEl.append(cityBtn)
+  }
+}
+
   // display search history list
   // for loop on array searchHistory[]
   // declare button and create element
@@ -100,7 +115,7 @@ function renderSearchHistory() {
   // create buutton
   // btn.setAttribute(data-search, searchHistory[i])
   // textcontent.append
-}
+
 
 function renderWeather(city, data) {
   renderCurrentWeather(city, data.current, data.timezone);
@@ -159,6 +174,8 @@ function searchCity(event) {
   console.log(cityEntryEl)
   fetchCoords(search);
   cityEntryEl.value = '';
+  fiveDayForecastEl.innerHTML = ''
+  currentWeatherEl.innerHTML = ''
 }
 
 function searchWeatherHistory(event) {

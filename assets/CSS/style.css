@@ -19,3 +19,29 @@ main{
     display: flex;
     flex-direction: row;
 }
+
+
+#current-weather {
+    border-radius: 15px;
+    line-height: 1.1;
+    padding: 10px;
+    background-color: lightgray;
+    font-size: large;
+}
+
+#current-weather h2 {
+    text-align: center;
+    font-size: xx-large
+}
+
+#search-history {
+    display: flex;
+    flex-direction: column;
+    max-width: 50%;
+    
+}
+
+#search-history button {
+    font-size: larger;
+    margin: 5px;
+}
