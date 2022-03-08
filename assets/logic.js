@@ -1,26 +1,74 @@
 let searchBtn = document.querySelector(".searchBtn")
 let cityEntryEl = document.querySelector(".city-entry")
 let searchHistoryEl = document.querySelector("#search-history")
+let currentWeatherEl = document.querySelector("#current-weather")
+let fiveDayForecastEl = document.querySelector("#five-day-forecast")
+
 let weatherURL = "https://api.openweathermap.org/";
 let APIKEY = "eb3ef0e0e63f51c08b0ca6554462ad8c"
 
 let searchHistory = []
 
 function renderCurrentWeather(city, weather, timezone) {
-  // store response data when created variables
+
+  let windspeed = weather.wind_speed
+  let icon = weather.weather[0].icon
+  let image = "http://openweathermap.org/img/w/" + icon + ".png";
   let tempF = weather.temp
+  let humidity = weather.humidity
+  let UvIndex = weather.uvi
+
+  let card = document.createElement("div");
+  let cardCity = document.createElement("h2")
+  let cardImg = document.createElement("img")
+  let cardTemp = document.createElement("p")
+  let cardWind = document.createElement("p")
+  let cardHumidity = document.createElement("p")
+  let cardUvIndex = document.createElement("p")
+
+  cardCity.textContent = city
+  cardTemp.textContent = "Current Temperature: " + tempF + " Degrees Farenheit"
+  cardWind.textContent = "Current Windspeed: " + windspeed + " mph"
+  cardHumidity.textContent = "Current Humidity: " + humidity + " %"
+  cardUvIndex.textContent = "Current UV Index: " + UvIndex
+
+  cardImg.setAttribute("src", image)
+
+  card.append(cardCity, cardImg, cardTemp, cardWind, cardHumidity, cardUvIndex)
+  currentWeatherEl.append(card)
+  
 }
 
-function renderForecastCard(forecast, timezone) {
-  // display forecast card. 
-  // create card for 5 days of forecast
-  // define variables from api
-  // look at bootstrap and hardcode one card wrapped into a div
-}
+function renderForecast(forecast, timezone) {
+  for (let i = 1; i < 6; i++) {
+    const singleDay = forecast[i];
 
-function renderForecast(dailyforecast, timezone) {
-  // for loop for the 5 day forecast
-  renderForecastCard()
+    let date = singleDay.dt
+    let icon = singleDay.weather[0].icon
+    let image = "http://openweathermap.org/img/w/" + icon + ".png";
+    let tempF = singleDay.temp.day
+    let wind = singleDay.wind_speed
+    let humidity = singleDay.humidity
+
+
+    let card = document.createElement("div");
+    let cardImg = document.createElement("img")
+    let cardDate = document.createElement("h5")
+    let cardTemp = document.createElement("p")
+    let cardWind = document.createElement("p")
+    let cardHumidity = document.createElement("p")
+
+    
+    cardDate.textContent = date
+    cardTemp.textContent = "Current Temperature: " + tempF + " Degrees Farenheit"
+    cardWind.textContent = "Current Windspeed: " + wind + " mph"
+    cardHumidity.textContent = "Current Humidity: " + humidity + " %"
+
+    cardImg.setAttribute("src", image)
+
+    card.append(cardImg, cardDate, cardTemp, cardWind, cardHumidity)
+    fiveDayForecastEl.append(card)
+  }
 }
 
 function initSearchHistory() {
@@ -29,6 +77,9 @@ function initSearchHistory() {
 }
 
 function appendHistory(search) {
+  if (!searchHistory) {
+    return
+  }
   searchHistory.push(search)
   localStorage.setItem("cityList", JSON.stringify(searchHistory))
   console.log(searchHistory)
@@ -40,6 +91,7 @@ function appendHistory(search) {
 }
 
 function renderSearchHistory() {
+  
   // display search history list
   // for loop on array searchHistory[]
   // declare button and create element
@@ -55,19 +107,13 @@ function renderWeather(city, data) {
   renderForecast(data.daily, data.timezone);
 }
 
-// This will pull location led by Lat and Lon for geo location
 function fetchWeather(location) {
   let { lat, lon } = location
-  console.log(lat)
-  console.log(lon)
   let city = location.name
-  console.log(city)
-  console.log(location)
   let apiurl = `${weatherURL}data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&exclude=minutely,hourly&appid=${APIKEY}`;
   
   fetch(apiurl)
     .then(function (response) {
-      console.log(response)
       return response.json();
     })
     .then(function (data) {
@@ -81,13 +127,10 @@ function fetchWeather(location) {
 
 }
 
-// Call out for the current weather and 5 day forecast weather
 function fetchCoords(search) {
-  // call API for query of limit
   let url = `${weatherURL}/geo/1.0/direct?q=${search}&limit=5&appid=${APIKEY}`;
   fetch(url)
     .then(function (response) {
-      console.log(response)
       return response.json();
     })
     .then(function (data) {
@@ -96,7 +139,6 @@ function fetchCoords(search) {
       } else {
         appendHistory(search)
         fetchWeather(data[0])
-        console.log(search)
         console.log(data[0])
       }
 
@@ -135,3 +177,19 @@ searchBtn.addEventListener("click", searchCity)
 
 
 searchHistoryEl.addEventListener("click", searchWeatherHistory)
+
+
+
+
+
+
+
+/* Style boxes
+convert unix date time to regular date
+current weather wants to show current date/dt
+conditional logic for UVI for current weather, coloring if at certain values
+save our previous searches to local storage and get local storage to make them into buttons
+
+
+
+*/
