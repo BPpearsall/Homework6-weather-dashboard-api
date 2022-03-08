@@ -7,7 +7,7 @@ let fiveDayForecastEl = document.querySelector("#five-day-forecast")
 let weatherURL = "https://api.openweathermap.org/";
 let APIKEY = "eb3ef0e0e63f51c08b0ca6554462ad8c"
 
-let searchHistory = []
+let searchHistory = JSON.parse(localStorage.getItem('cityList')) || [];
 
 function renderCurrentWeather(city, weather, timezone) {
 
@@ -15,7 +15,6 @@ function renderCurrentWeather(city, weather, timezone) {
   let icon = weather.weather[0].icon
   let image = "http://openweathermap.org/img/w/" + icon + ".png";
   let tempF = weather.temp
-  let date = weather.date
   let humidity = weather.humidity
   let UvIndex = weather.uvi
 
@@ -27,7 +26,14 @@ function renderCurrentWeather(city, weather, timezone) {
   let cardWind = document.createElement("p")
   let cardHumidity = document.createElement("p")
   let cardUvIndex = document.createElement("p")
-
+  if (UvIndex < 2) {
+    cardUvIndex.classList.add("uv-low")
+  } if (UvIndex > 2 && UvIndex < 4) {
+    cardUvIndex.classList.add("uv-med")
+  } if (UvIndex > 4) {
+    cardUvIndex.classList.add("uv-high")
+  }
+  
   cardCity.textContent = city
   cardDate.textContent = moment().format("MM/DD/YYYY");
   cardTemp.textContent = "Current Temperature: " + tempF + " Degrees Farenheit"
@@ -62,9 +68,9 @@ function renderForecast(forecast, timezone) {
     let cardHumidity = document.createElement("p")
 
     cardDate.textContent = moment.unix(date).format("MM/DD/YYYY");
-    cardTemp.textContent = "Current Temperature: " + tempF + " Degrees Farenheit"
-    cardWind.textContent = "Current Windspeed: " + wind + " mph"
-    cardHumidity.textContent = "Current Humidity: " + humidity + " %"
+    cardTemp.textContent = "Temperature: " + tempF + "Deg"
+    cardWind.textContent = "Windspeed: " + wind + " mph"
+    cardHumidity.textContent = "Humidity: " + humidity + "%"
 
     cardImg.setAttribute("src", image)
 
@@ -74,12 +80,18 @@ function renderForecast(forecast, timezone) {
 }
 
 function initSearchHistory() {
-  
-  }
+  let searchedCities = JSON.parse(localStorage.getItem("cityList"))
+  console.log(searchedCities)
+  for (let i = 0; i < searchedCities.length; i++) {
     
-  ;
-  // localstorage.getitem
-  renderSearchHistory()
+    const pastCity = searchedCities[i];
+    
+    let cityBtn = document.createElement("button")
+    cityBtn.textContent = pastCity
+    searchHistoryEl.append(cityBtn)
+  }
+  }
+
 
 function appendHistory(search) {
   if (!searchHistory) {
@@ -88,33 +100,8 @@ function appendHistory(search) {
   searchHistory.push(search)
   localStorage.setItem("cityList", JSON.stringify(searchHistory))
   console.log(searchHistory)
-  // sets localstorage, updates displayed history
-  // if there is no search, return function
-  // searchhistory[] needs to be globally declards
-  // searchHistory.push(search)
-  renderSearchHistory()
+  initSearchHistory()
 }
-
-function renderSearchHistory() {
-  let searchedCities = JSON.parse(localStorage.getItem("cityList"))
-  console.log(searchedCities)
-  for (let i = 0; i < searchedCities.length; i++) {
-    const pastCity = searchedCities[i];
-    
-    let cityBtn = document.createElement("button")
-    cityBtn.textContent = pastCity
-    searchHistoryEl.append(cityBtn)
-  }
-}
-
-  // display search history list
-  // for loop on array searchHistory[]
-  // declare button and create element
-  // declare attributes for forecast and buttonhistory
-  // call data-search
-  // create buutton
-  // btn.setAttribute(data-search, searchHistory[i])
-  // textcontent.append
 
 
 function renderWeather(city, data) {
@@ -176,6 +163,7 @@ function searchCity(event) {
   cityEntryEl.value = '';
   fiveDayForecastEl.innerHTML = ''
   currentWeatherEl.innerHTML = ''
+  searchHistoryEl.innerHTML = ''
 }
 
 function searchWeatherHistory(event) {
@@ -188,7 +176,7 @@ function searchWeatherHistory(event) {
   fetchCoords(search)
 }
 
-initSearchHistory();
+initSearchHistory()
 
 searchBtn.addEventListener("click", searchCity)
 
