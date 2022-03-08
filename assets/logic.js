@@ -80,16 +80,19 @@ function renderForecast(forecast, timezone) {
 }
 
 function initSearchHistory() {
-  let searchedCities = JSON.parse(localStorage.getItem("cityList"))
+  let searchedCities =   JSON.parse(localStorage.getItem("cityList")) ? JSON.parse(localStorage.getItem("cityList")) : []
   console.log(searchedCities)
+  searchHistoryEl.innerHMTL = '';
   for (let i = 0; i < searchedCities.length; i++) {
     
     const pastCity = searchedCities[i];
     
     let cityBtn = document.createElement("button")
+    cityBtn.classList.add("btn-history")
     cityBtn.textContent = pastCity
     searchHistoryEl.append(cityBtn)
   }
+  
   }
 
 
@@ -149,14 +152,16 @@ function fetchCoords(search) {
     .catch(function (err) {
       console.error(err);
     });
-
+    fiveDayForecastEl.innerHTML = ''
+    currentWeatherEl.innerHTML = ''
+    searchHistoryEl.innerHTML = ''
 }
 
 function searchCity(event) {
+  event.preventDefault()
   if (!cityEntryEl.value) {
     return;
   }
-  event.preventDefault()
   let search = cityEntryEl.value.trim();
   console.log(cityEntryEl)
   fetchCoords(search);
@@ -172,7 +177,7 @@ function searchWeatherHistory(event) {
     return;
   }
   let btn = event.target;
-  let search = btn.getAttribute("data-search");
+  let search = btn.textContent;
   fetchCoords(search)
 }
 
