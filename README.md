@@ -4,6 +4,8 @@
 https://bppearsall.github.io/Homework6-weather-dashboard-api/
 ![photo of weather dashboard main page](./assets/images/weather-dashboard-photo.PNG)
 
+
+## Functions
 When I search for a city I receive current weather data and a forecast data for the next 5 days.
 
 The city that I search is added underneath the search area as a clickable link to go back to that cities weather forecast

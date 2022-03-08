@@ -1,15 +1,19 @@
+// Defined global doms 
 let searchBtn = document.querySelector(".searchBtn")
 let cityEntryEl = document.querySelector(".city-entry")
 let searchHistoryEl = document.querySelector("#search-history")
 let currentWeatherEl = document.querySelector("#current-weather")
 let fiveDayForecastEl = document.querySelector("#five-day-forecast")
 
+// OpenWeather api information
 let weatherURL = "https://api.openweathermap.org/";
 let APIKEY = "eb3ef0e0e63f51c08b0ca6554462ad8c"
 
+// Sets empty array for searchHistoryt to be filled
 let searchHistory = JSON.parse(localStorage.getItem('cityList')) || [];
 
-function renderCurrentWeather(city, weather, timezone) {
+// Creates card and calls api information for current day
+function renderCurrentWeather(city, weather) {
 
   let windspeed = weather.wind_speed
   let icon = weather.weather[0].icon
@@ -26,6 +30,7 @@ function renderCurrentWeather(city, weather, timezone) {
   let cardWind = document.createElement("p")
   let cardHumidity = document.createElement("p")
   let cardUvIndex = document.createElement("p")
+  // If Statements for adding colors to UV index
   if (UvIndex < 2) {
     cardUvIndex.classList.add("uv-low")
   } if (UvIndex > 2 && UvIndex < 4) {
@@ -48,7 +53,8 @@ function renderCurrentWeather(city, weather, timezone) {
   
 }
 
-function renderForecast(forecast, timezone) {
+// Function to render the 5 day forecast
+function renderForecast(forecast) {
   for (let i = 1; i < 6; i++) {
     const singleDay = forecast[i];
 
@@ -67,6 +73,7 @@ function renderForecast(forecast, timezone) {
     let cardWind = document.createElement("p")
     let cardHumidity = document.createElement("p")
 
+    // moment.unix converts api data in unix to mm/dd/yyyy format
     cardDate.textContent = moment.unix(date).format("MM/DD/YYYY");
     cardTemp.textContent = "Temperature: " + tempF + "Deg"
     cardWind.textContent = "Windspeed: " + wind + " mph"
@@ -78,7 +85,7 @@ function renderForecast(forecast, timezone) {
     fiveDayForecastEl.append(card)
   }
 }
-
+// getting local storage and appending buttons to searchhistory dom
 function initSearchHistory() {
   let searchedCities =   JSON.parse(localStorage.getItem("cityList")) ? JSON.parse(localStorage.getItem("cityList")) : []
   console.log(searchedCities)
@@ -95,7 +102,7 @@ function initSearchHistory() {
   
   }
 
-
+// Setting local storage based off searched cities
 function appendHistory(search) {
   if (!searchHistory) {
     return
@@ -106,12 +113,13 @@ function appendHistory(search) {
   initSearchHistory()
 }
 
-
+// sending fetchWeather information to currentweather and 5 day forecast function
 function renderWeather(city, data) {
   renderCurrentWeather(city, data.current, data.timezone);
   renderForecast(data.daily, data.timezone);
 }
 
+// uses the city name gotten through fetchCoords to get the Lat and Lon of the city and then uses that to get relevant API data
 function fetchWeather(location) {
   let { lat, lon } = location
   let city = location.name
@@ -132,6 +140,7 @@ function fetchWeather(location) {
 
 }
 
+// searches weather API for the city selected in search text field
 function fetchCoords(search) {
   let url = `${weatherURL}/geo/1.0/direct?q=${search}&limit=5&appid=${APIKEY}`;
   fetch(url)
@@ -157,6 +166,7 @@ function fetchCoords(search) {
     searchHistoryEl.innerHTML = ''
 }
 
+// checks if text box is empty and sends cityEntryEl value to fetchCoords function, clears page to avoid duplicate information
 function searchCity(event) {
   event.preventDefault()
   if (!cityEntryEl.value) {
@@ -171,6 +181,7 @@ function searchCity(event) {
   searchHistoryEl.innerHTML = ''
 }
 
+// Allows the buttons on searchhistory to be clicked to that you can look at previous cities quickly
 function searchWeatherHistory(event) {
   event.preventDefault()
   if (!event.target.matches(".btn-history")) {
@@ -181,9 +192,11 @@ function searchWeatherHistory(event) {
   fetchCoords(search)
 }
 
+// loads previous buttons from local storage
 initSearchHistory()
 
 searchBtn.addEventListener("click", searchCity)
+
 
 
 searchHistoryEl.addEventListener("click", searchWeatherHistory)
@@ -193,13 +206,3 @@ searchHistoryEl.addEventListener("click", searchWeatherHistory)
 
 
 
-
-/* Style boxes
-convert unix date time to regular date
-current weather wants to show current date/dt
-conditional logic for UVI for current weather, coloring if at certain values
-save our previous searches to local storage and get local storage to make them into buttons
-
-
-
-*/
